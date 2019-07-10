@@ -15,7 +15,7 @@ The easiest way to get the sample is by cloning the samples repository with git,
 ```console
 git clone https://github.com/dotnet/dotnet-docker-samples/
 ```
-
+TEST
 You can also [download the repository as a zip](https://github.com/dotnet/dotnet-docker-samples/archive/master.zip).
 
 ## Build and run the sample with Docker for Linux containers
