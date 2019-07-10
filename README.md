@@ -26,6 +26,7 @@ You can build and run the sample in Docker using Linux containers using the foll
 
 
 
+
 ```console
 cd aspnetapp
 docker build -t aspnetapp .
