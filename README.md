@@ -8,6 +8,8 @@ It uses the [Docker multi-stage build feature](https://github.com/dotnet/announc
 
 This sample requires [Docker 17.06](https://docs.docker.com/release-notes/docker-ce) or later of the [Docker client](https://www.docker.com/products/docker). You need the latest Windows 10 or Windows Server 2016 to use [Windows containers](http://aka.ms/windowscontainers). The instructions assume you have the [Git](https://git-scm.com/downloads) client installed.
 
+
+
 ## Getting the sample
 
 The easiest way to get the sample is by cloning the samples repository with git, using the following instructions.
