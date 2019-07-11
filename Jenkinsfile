@@ -70,57 +70,59 @@ def sendImageLink(
 };
 
 node {
-    try {
-        final scmVars = checkout(scm)
-        def url = sh(returnStdout: true, script: 'git config remote.origin.url').trim()
-        echo "scmVars: ${scmVars}"
-        echo "scmVars.GIT_COMMIT: ${scmVars.GIT_COMMIT}"
-        echo "scmVars.GIT_BRANCH: ${scmVars.GIT_BRANCH}"
-        echo "url: ${url}"
+  withCredentials([[$class: 'StringBinding', credentialsId: 'atomist-workspace', variable: 'ATOMIST_WORKSPACES']]) {
+      try {
+          final scmVars = checkout(scm)
+          def url = sh(returnStdout: true, script: 'git config remote.origin.url').trim()
+          echo "scmVars: ${scmVars}"
+          echo "scmVars.GIT_COMMIT: ${scmVars.GIT_COMMIT}"
+          echo "scmVars.GIT_BRANCH: ${scmVars.GIT_BRANCH}"
+          echo "url: ${url}"
 
-        echo 'Sending build start...'
-        notifyAtomist(
-            ATOMIST_WORKSPACES,
-            'STARTED',
-            url,
-            scmVars.GIT_BRANCH,
-            scmVars.GIT_COMMIT,
-            'STARTED'
-        )
+          echo 'Sending build start...'
+          notifyAtomist(
+              ATOMIST_WORKSPACES,
+              'STARTED',
+              url,
+              scmVars.GIT_BRANCH,
+              scmVars.GIT_COMMIT,
+              'STARTED'
+          )
 
-        stage('Build Image') {
-            def customImage = docker.build("ipcrm/docker-base-testing-things:${env.BUILD_ID}")
-            docker.withRegistry('https://registry.hub.docker.com', 'dockerhub-creds') {
-                customImage.push("${env.BUILD_NUMBER}")
-                customImage.push("latest")
-            }
+          stage('Build Image') {
+              def customImage = docker.build("ipcrm/docker-base-testing-things:${env.BUILD_ID}")
+              docker.withRegistry('https://registry.hub.docker.com', 'dockerhub-creds') {
+                  customImage.push("${env.BUILD_NUMBER}")
+                  customImage.push("latest")
+              }
 
-            def repoName = scm.getUserRemoteConfigs()[0].getUrl().tokenize('/')[3].split("\\.")[0]
-            def ownerName = scm.getUserRemoteConfigs()[0].getUrl().tokenize('/')[2]
+              def repoName = scm.getUserRemoteConfigs()[0].getUrl().tokenize('/')[3].split("\\.")[0]
+              def ownerName = scm.getUserRemoteConfigs()[0].getUrl().tokenize('/')[2]
 
-            echo "Found repo name to be ${repoName} and owner to be ${ownerName}"
-            sendImageLink(ownerName, repoName, scmVars.GIT_COMMIT, "ipcrm/docker-base-testing-things:${env.BUILD_ID}")
-        }
+              echo "Found repo name to be ${repoName} and owner to be ${ownerName}"
+              sendImageLink(ownerName, repoName, scmVars.GIT_COMMIT, "ipcrm/docker-base-testing-things:${env.BUILD_ID}")
+          }
 
-        echo 'Sending build success...'
-        currentBuild.result = 'SUCCESS'
-        notifyAtomist(
+          echo 'Sending build success...'
+          currentBuild.result = 'SUCCESS'
+          notifyAtomist(
+              ATOMIST_WORKSPACES,
+              currentBuild.result,
+              url,
+              scmVars.GIT_BRANCH,
+              scmVars.GIT_COMMIT
+          )
+      } catch (Exception err) {
+          echo "Failure discovered ${err}"
+          echo 'Sending build failure...'
+          currentBuild.result = 'FAILURE'
+          notifyAtomist(
             ATOMIST_WORKSPACES,
             currentBuild.result,
             url,
             scmVars.GIT_BRANCH,
             scmVars.GIT_COMMIT
-        )
-    } catch (Exception err) {
-        echo "Failure discovered ${err}"
-        echo 'Sending build failure...'
-        currentBuild.result = 'FAILURE'
-        notifyAtomist(
-          ATOMIST_WORKSPACES,
-          currentBuild.result,
-          url,
-          scmVars.GIT_BRANCH,
-          scmVars.GIT_COMMIT
-        )
-    }
+          )
+      }
+  }
 }
