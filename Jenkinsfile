@@ -36,7 +36,9 @@ def notifyAtomist(
     )
     workspaceIds.split(',').each { workspaceId ->
         String endpoint = "https://webhook.atomist.com/atomist/jenkins/teams/${workspaceId}"
+        echo "Sending ${payload} to ${endpoint}"
         sh "curl --silent -X POST -H 'Content-Type: application/json' -d '${payload}' ${endpoint}"
+        echo "Success"
     }
 }
 
@@ -95,6 +97,8 @@ node {
 
             def repoName = scm.getUserRemoteConfigs()[0].getUrl().tokenize('/')[3].split("\\.")[0]
             def ownerName = scm.getUserRemoteConfigs()[0].getUrl().tokenize('/')[2]
+
+            echo "Found repo name to be ${repoName} and owner to be ${ownerName}"
             sendImageLink(ownerName, repoName, scmVars.GIT_COMMIT, "ipcrm/docker-base-testing-things:${env.BUILD_ID}")
         }
 
@@ -108,6 +112,7 @@ node {
             scmVars.GIT_COMMIT
         )
     } catch (Exception err) {
+        echo "Failure discovered ${err}"
         echo 'Sending build failure...'
         currentBuild.result = 'FAILURE'
         notifyAtomist(
