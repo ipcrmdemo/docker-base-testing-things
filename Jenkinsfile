@@ -118,6 +118,7 @@ node {
             echo 'Sending build failure...'
             currentBuild.result = 'FAILURE'
             def url = sh(returnStdout: true, script: 'git config remote.origin.url').trim()
+            final scmVars = checkout(scm)
             notifyAtomist(
               ATOMIST_WORKSPACES,
               currentBuild.result,
