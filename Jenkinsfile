@@ -117,6 +117,7 @@ node {
           withCredentials([[$class: 'StringBinding', credentialsId: 'atomist-workspace', variable: 'ATOMIST_WORKSPACES']]) {
             echo 'Sending build failure...'
             currentBuild.result = 'FAILURE'
+            def url = sh(returnStdout: true, script: 'git config remote.origin.url').trim()
             notifyAtomist(
               ATOMIST_WORKSPACES,
               currentBuild.result,
