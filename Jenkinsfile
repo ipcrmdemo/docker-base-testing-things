@@ -48,7 +48,7 @@ def notifyAtomist(
 def sendImageLink(
     String workspaceIds,
     String owner,
-    String repository,
+    String repo,
     String commit,
     String image
 ) {
