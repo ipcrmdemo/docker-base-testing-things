@@ -46,6 +46,7 @@ def notifyAtomist(
  * Send Image-link event to Atomist to associate the new image to the commit
  */
 def sendImageLink(
+    String workspaceIds,
     String owner,
     String repository,
     String commit,
@@ -100,7 +101,13 @@ node {
                 def ownerName = scm.getUserRemoteConfigs()[0].getUrl().tokenize('/')[2]
 
                 echo "Found repo name to be ${repoName} and owner to be ${ownerName}"
-                sendImageLink(ownerName, repoName, scmVars.GIT_COMMIT, "ipcrm/docker-base-testing-things:${env.BUILD_ID}")
+                sendImageLink(
+                  ATOMIST_WORKSPACES,
+                  ownerName,
+                  repoName,
+                  scmVars.GIT_COMMIT,
+                  "ipcrm/docker-base-testing-things:${env.BUILD_ID}"
+                )
             }
 
             echo 'Sending build success...'
