@@ -113,7 +113,6 @@ node {
               scmVars.GIT_COMMIT
           )
       } catch (Exception err) {
-          echo "Failure discovered ${err}"
           echo 'Sending build failure...'
           currentBuild.result = 'FAILURE'
           notifyAtomist(
