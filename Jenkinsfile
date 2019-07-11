@@ -44,9 +44,9 @@ def notifyAtomist(
  * Send Image-link event to Atomist to associate the new image to the commit
  */
 def sendImageLink(
-    String owner
-    String repository
-    String commit
+    String owner,
+    String repository,
+    String commit,
     String image
 ) {
     if (!workspaceIds) {
