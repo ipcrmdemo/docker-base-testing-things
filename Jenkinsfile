@@ -115,6 +115,7 @@ node {
         }
       } catch (Exception err) {
           withCredentials([[$class: 'StringBinding', credentialsId: 'atomist-workspace', variable: 'ATOMIST_WORKSPACES']]) {
+            echo "Failure discovered! ${err}"
             echo 'Sending build failure...'
             currentBuild.result = 'FAILURE'
             def url = sh(returnStdout: true, script: 'git config remote.origin.url').trim()
